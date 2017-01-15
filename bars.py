@@ -27,25 +27,33 @@ def get_closest_bar(data, longitude, latitude):
     return (closest_bar['Name'], str(closest_bar['geoData']['coordinates']))
 
 if __name__ == '__main__':
-    data = load_data('data.json')
-    print('Самый вместительный московский бар: %s, %s посадочных мест' % get_biggest_bar(data))
-    print('Самый тесный московский бар: %s, %s посадочных мест' % get_smallest_bar(data))
-    
     while True:
-        longitude = input("Введите вашу долготу: ")
+        filepath = input('Укажите путь к файлу с данными: ')
         try:
-            longitude = float(longitude)
+            data = load_data(filepath)
             break
         except Exception as e:
-            print("Ой, что-то не так с вашей долготой, попробуйте еще раз!")
-    
-    while True:
-        latitude = input("Введите вашу широту: ")
-        try:
-            latitude = float(latitude)
-            break
-        except Exception as e:
-            print("Ой, что-то не так с вашей широтой, попробуйте еще раз!")    
-    
-    print('Ваши координаты: [%s, %s]' % (longitude, latitude))
-    print('Ближайший от вас московский бар: %s, его координаты: %s' % get_closest_bar(data, longitude, latitude))
+            print('Кажется, с вашим файлом что-то не так, попробуйте еще раз')
+        
+    if data:
+        print('Самый вместительный московский бар: %s, %s посадочных мест' % get_biggest_bar(data))
+        print('Самый тесный московский бар: %s, %s посадочных мест' % get_smallest_bar(data))
+        
+        while True:
+            longitude = input("Введите вашу долготу: ")
+            try:
+                longitude = float(longitude)
+                break
+            except Exception as e:
+                print("Ой, что-то не так с вашей долготой, попробуйте еще раз!")
+        
+        while True:
+            latitude = input("Введите вашу широту: ")
+            try:
+                latitude = float(latitude)
+                break
+            except Exception as e:
+                print("Ой, что-то не так с вашей широтой, попробуйте еще раз!")    
+        
+        print('Ваши координаты: [%s, %s]' % (longitude, latitude))
+        print('Ближайший от вас московский бар: %s, его координаты: %s' % get_closest_bar(data, longitude, latitude))
