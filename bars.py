@@ -1,17 +1,16 @@
-# -*- coding: utf-8 -*-
 import json
+import os
 from math import sqrt
 
-def get_distance(lt, lg, x, y):
-    return sqrt((lt - float(x))**2 + (lg - float(y))**2)
+def get_distance(user_latitude, user_longitude, bar_latitude, bar_longitude):
+    return sqrt((user_latitude - float(bar_latitude))**2 + (user_longitude - float(bar_longitude))**2)
 
 def load_data(filepath):
+    if not os.path.exists(filepath):
+        return None
     with open(filepath) as data_file:    
-        data = json.load(data_file)
+        return json.load(data_file)
     
-    return data
-
-
 def get_biggest_bar(data):
     biggest_bar = max(data, key=lambda e: e['SeatsCount'])
     return (biggest_bar['Name'], biggest_bar['SeatsCount'])
@@ -21,39 +20,34 @@ def get_smallest_bar(data):
     smallest_bar = min(data, key=lambda e: e['SeatsCount'])
     return (smallest_bar['Name'], smallest_bar['SeatsCount'])
 
-
 def get_closest_bar(data, longitude, latitude):
     closest_bar = min(data, key=lambda e: get_distance(latitude, longitude, e['geoData']['coordinates'][1], e['geoData']['coordinates'][0]))
     return (closest_bar['Name'], str(closest_bar['geoData']['coordinates']))
 
 if __name__ == '__main__':
-    while True:
-        filepath = input('Укажите путь к файлу с данными: ')
-        try:
-            data = load_data(filepath)
-            break
-        except Exception as e:
-            print('Кажется, с вашим файлом что-то не так, попробуйте еще раз')
+    filepath = input('Укажите путь к файлу с данными: ')
+    data = load_data(filepath)
+    if data is None:
+        print('Кажется, с вашим файлом что-то не так, попробуйте еще раз')
         
-    if data:
+    else:
         print('Самый вместительный московский бар: %s, %s посадочных мест' % get_biggest_bar(data))
         print('Самый тесный московский бар: %s, %s посадочных мест' % get_smallest_bar(data))
         
-        while True:
-            longitude = input("Введите вашу долготу: ")
-            try:
-                longitude = float(longitude)
-                break
-            except Exception as e:
-                print("Ой, что-то не так с вашей долготой, попробуйте еще раз!")
+        longitude = input("Введите вашу долготу: ")
+        try:
+            longitude = float(longitude)
+        except Exception as e:
+            longitude = None
         
-        while True:
-            latitude = input("Введите вашу широту: ")
-            try:
-                latitude = float(latitude)
-                break
-            except Exception as e:
-                print("Ой, что-то не так с вашей широтой, попробуйте еще раз!")    
+        latitude = input("Введите вашу широту: ")
+        try:
+            latitude = float(latitude)
+        except Exception as e:
+            latitude = None
         
-        print('Ваши координаты: [%s, %s]' % (longitude, latitude))
-        print('Ближайший от вас московский бар: %s, его координаты: %s' % get_closest_bar(data, longitude, latitude))
+        if longitude is not None and latitude is not None:
+            print('Ваши координаты: [%s, %s]' % (longitude, latitude))
+            print('Ближайший от вас московский бар: %s, его координаты: %s' % get_closest_bar(data, longitude, latitude))
+        else:
+            print('Неверно указана широта или долгота, попробуйте еще раз')
