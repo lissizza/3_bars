@@ -5,6 +5,14 @@ from math import sqrt
 def get_distance(user_latitude, user_longitude, bar_latitude, bar_longitude):
     return sqrt((user_latitude - float(bar_latitude))**2 + (user_longitude - float(bar_longitude))**2)
 
+def get_coordinates():
+    coordinates = input("Введите вашу долготу и широту через пробел: ")
+    try:
+        longitude, latitude = map(float, coordinates.split())
+        return (longitude, latitude)
+    except Exception as e:
+        return None
+    
 def load_data(filepath):
     if not os.path.exists(filepath):
         return None
@@ -26,28 +34,17 @@ def get_closest_bar(data, longitude, latitude):
 
 if __name__ == '__main__':
     filepath = input('Укажите путь к файлу с данными: ')
-    data = load_data(filepath)
-    if data is None:
+    bar_data = load_data(filepath)
+    if bar_data is None:
         print('Кажется, с вашим файлом что-то не так, попробуйте еще раз')
         
     else:
-        print('Самый вместительный московский бар: %s, %s посадочных мест' % get_biggest_bar(data))
-        print('Самый тесный московский бар: %s, %s посадочных мест' % get_smallest_bar(data))
+        print('Самый вместительный московский бар: %s, %s посадочных мест' % get_biggest_bar(bar_data))
+        print('Самый тесный московский бар: %s, %s посадочных мест' % get_smallest_bar(bar_data))
         
-        longitude = input("Введите вашу долготу: ")
-        try:
-            longitude = float(longitude)
-        except Exception as e:
-            longitude = None
-        
-        latitude = input("Введите вашу широту: ")
-        try:
-            latitude = float(latitude)
-        except Exception as e:
-            latitude = None
-        
-        if longitude is not None and latitude is not None:
-            print('Ваши координаты: [%s, %s]' % (longitude, latitude))
-            print('Ближайший от вас московский бар: %s, его координаты: %s' % get_closest_bar(data, longitude, latitude))
-        else:
+        coordinates = get_coordinates()
+        if coordinates is None:
             print('Неверно указана широта или долгота, попробуйте еще раз')
+        else:
+            print('Ваши координаты: [%s, %s]' % coordinates)
+            print('Ближайший от вас московский бар: %s, его координаты: %s' % get_closest_bar(bar_data, coordinates[0], coordinates[1]))
